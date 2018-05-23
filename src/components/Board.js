@@ -5,22 +5,35 @@ import Field from './Field';
 class Board extends Component {
   constructor(props) {
     super(props);
+
+    this.onFieldClick = this.onFieldClick.bind(this);
   }
 
-  renderFiedls() {
-    const fields = [];
+  onFieldClick(x, y) {
+    this.props.onFieldClick(x, y);
+  }
 
-    for (let i = 0; i < 10; i++) {
+  renderFields() {
+    const fieldsComponent = [];
+    const fields = this.props.fields;
+
+    for (let i = 0; i < fields.length; i++) {
       for (let j = 0; j < 10; j++) {
-        fields.push(<Field key={i + '_' + j} />);
+        fieldsComponent.push(
+          <Field
+            key={i + '_' + j}
+            {...fields[i][j]}
+            onFieldClick={this.onFieldClick}
+          />
+        );
       }
     }
 
-    return fields;
+    return fieldsComponent;
   }
 
   render() {
-    return <div className="board">{this.renderFiedls()}</div>;
+    return <div className="board">{this.renderFields()}</div>;
   }
 }
 

@@ -39,11 +39,24 @@ body {
   border-right: 1px solid #b6bfb5;
 }
 
-.field:hover {
+.field.disabled {
+  background-color: #7f857e;
+}
+
+.field.current {
+  background-color: red;
+}
+
+.field.active {
+  background-color: green;
+}
+
+.field:not(.disabled):not(.current):hover {
   background-color: #acf0f2;
 }
 
 .stats {
   display: flex;
   justify-content: space-between;
+  padding-top: 5px;
 }
