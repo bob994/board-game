@@ -11,8 +11,9 @@ export function initializeArray() {
         x: i,
         y: j,
         disabled: false,
-        active: false,
-        current: false
+        level: false,
+        current: false,
+        next: false
       });
     }
   }

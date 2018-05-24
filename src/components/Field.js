@@ -12,7 +12,8 @@ class Field extends Component {
     let className = 'field';
     if (this.props.disabled) className += ' disabled';
     else if (this.props.current) className += ' current';
-    else if (this.props.active) className += ' active';
+    else if (this.props.level) className += ' level';
+    else if (this.props.next) className += ' next';
 
     return (
       <div

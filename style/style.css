@@ -47,11 +47,15 @@ body {
   background-color: red;
 }
 
-.field.active {
+.field.level {
   background-color: green;
 }
 
-.field:not(.disabled):not(.current):hover {
+.field.next {
+  background-color: greenyellow;
+}
+
+.field:not(.disabled):not(.current):not(.level):hover {
   background-color: #acf0f2;
 }
 

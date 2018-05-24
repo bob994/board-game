@@ -20,7 +20,14 @@ class Game extends Component {
   generate(x, y) {
     const fields = initializeArray();
     fields[x][y].current = true;
+    fields[x][y].level = true;
     console.log(this.rec(fields, fields[x][y], this.props.level));
+
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        if (!fields[i][j].level) fields[i][j].disabled = true;
+      }
+    }
     this.props.generateLevel(fields);
   }
 
@@ -40,13 +47,13 @@ class Game extends Component {
 
     do {
       if (af.length === 0) {
-        firstField.active = false;
+        firstField.level = false;
         return [];
       }
       arr = [];
       const r = af[Math.floor(Math.random() * af.length)];
       af.splice(af.indexOf(r), 1);
-      r.active = true;
+      r.level = true;
       const next = this.rec(fields, r, level - 1);
       // if (next.length == 0 && level > 1) r.active = false;
       arr = [r, ...next];
@@ -60,55 +67,35 @@ class Game extends Component {
 
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
-        if (x - 3 == i && y == j && !arr[i][j].current && !arr[i][j].active) {
+        if (x - 3 == i && y == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (x + 3 == i && y == j && !arr[i][j].current && !arr[i][j].active) {
+        if (x + 3 == i && y == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (y - 3 == j && x == i && !arr[i][j].current && !arr[i][j].active) {
+        if (y - 3 == j && x == i && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (y + 3 == j && x == i && !arr[i][j].current && !arr[i][j].active) {
+        if (y + 3 == j && x == i && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (
-          x - 2 == i &&
-          y - 2 == j &&
-          !arr[i][j].current &&
-          !arr[i][j].active
-        ) {
+        if (x - 2 == i && y - 2 == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (
-          x - 2 == i &&
-          y + 2 == j &&
-          !arr[i][j].current &&
-          !arr[i][j].active
-        ) {
+        if (x - 2 == i && y + 2 == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (
-          x + 2 == i &&
-          y - 2 == j &&
-          !arr[i][j].current &&
-          !arr[i][j].active
-        ) {
+        if (x + 2 == i && y - 2 == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
 
-        if (
-          x + 2 == i &&
-          y + 2 == j &&
-          !arr[i][j].current &&
-          !arr[i][j].active
-        ) {
+        if (x + 2 == i && y + 2 == j && !arr[i][j].level) {
           result.push(arr[i][j]);
         }
       }
