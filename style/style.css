@@ -43,7 +43,7 @@ body {
   background-color: #7f857e;
 }
 
-.field.current {
+.field.played {
   background-color: red;
 }
 
@@ -55,7 +55,7 @@ body {
   background-color: greenyellow;
 }
 
-.field:not(.disabled):not(.current):not(.level):hover {
+.field:not(.disabled):not(.played):not(.level):hover {
   background-color: #acf0f2;
 }
 

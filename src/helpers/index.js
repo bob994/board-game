@@ -12,7 +12,7 @@ export function initializeArray() {
         y: j,
         disabled: false,
         level: false,
-        current: false,
+        played: false,
         next: false
       });
     }

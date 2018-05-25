@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { generateLevel } from '../actions';
+import {
+  generateLevel,
+  playTurn,
+  levelCompleted,
+  levelFailed
+} from '../actions';
 import { initializeArray } from '../helpers';
 
 import Board from '../components/Board';
@@ -17,9 +22,16 @@ class Game extends Component {
     this.onFieldClick = this.onFieldClick.bind(this);
   }
 
+  componentDidUpdate() {
+    if (this.props.fieldsLeftToClick == 0) {
+      this.setState({ levelGenerated: false });
+      this.props.levelCompleted();
+    }
+  }
+
   generate(x, y) {
     const fields = initializeArray();
-    fields[x][y].current = true;
+    fields[x][y].played = true;
     fields[x][y].level = true;
     console.log(this.rec(fields, fields[x][y], this.props.level));
 
@@ -28,12 +40,43 @@ class Game extends Component {
         if (!fields[i][j].level) fields[i][j].disabled = true;
       }
     }
+
+    const nextFields = this.availableNextField(fields, x, y);
+
+    for (let i = 0; i < nextFields.length; i++) {
+      fields[nextFields[i].x][nextFields[i].y].next = true;
+    }
+
     this.props.generateLevel(fields);
   }
 
   onFieldClick(x, y) {
     if (!this.state.levelGenerated) {
       this.generate(x, y);
+      this.setState({ levelGenerated: true });
+    } else {
+      const fields = this.props.fields;
+      const field = fields[x][y];
+      field.played = true;
+
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          if (fields[i][j].next) fields[i][j].next = false;
+        }
+      }
+
+      const nextFields = this.availableNextField(fields, x, y);
+      console.log(nextFields);
+
+      if (nextFields.length === 0 && this.props.fieldsLeftToClick > 1) {
+        console.log('Failed');
+        this.props.levelFailed();
+      }
+
+      for (let i = 0; i < nextFields.length; i++) {
+        fields[nextFields[i].x][nextFields[i].y].next = true;
+      }
+      this.props.playTurn(fields);
     }
   }
 
@@ -104,6 +147,48 @@ class Game extends Component {
     return result;
   }
 
+  availableNextField(arr, x, y) {
+    let result = [];
+
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        if (x - 3 == i && y == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (x + 3 == i && y == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (y - 3 == j && x == i && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (y + 3 == j && x == i && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (x - 2 == i && y - 2 == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (x - 2 == i && y + 2 == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (x + 2 == i && y - 2 == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+
+        if (x + 2 == i && y + 2 == j && arr[i][j].level && !arr[i][j].played) {
+          result.push(arr[i][j]);
+        }
+      }
+    }
+
+    return result;
+  }
+
   render() {
     return (
       <div className="game">
@@ -127,4 +212,9 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { generateLevel })(Game);
+export default connect(mapStateToProps, {
+  generateLevel,
+  playTurn,
+  levelCompleted,
+  levelFailed
+})(Game);
