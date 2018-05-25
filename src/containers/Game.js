@@ -7,6 +7,7 @@ import {
   levelFailed
 } from '../actions';
 import { initializeArray } from '../helpers';
+import Swal from 'sweetalert2';
 
 import Board from '../components/Board';
 import Stats from '../components/Stats';
@@ -15,17 +16,25 @@ class Game extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      levelGenerated: false
-    };
-
     this.onFieldClick = this.onFieldClick.bind(this);
   }
 
   componentDidUpdate() {
     if (this.props.fieldsLeftToClick == 0) {
-      this.setState({ levelGenerated: false });
-      this.props.levelCompleted();
+      Swal({
+        title: 'Well done!',
+        text: `You finish level ${this.props.level}. Continue on next level?`,
+        type: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, go on!',
+        cancelButtonText: 'No, get me back on level picker.'
+      }).then(result => {
+        if (result.value) {
+          this.props.levelCompleted();
+        } else {
+          this.props.history.push('/');
+        }
+      });
     }
   }
 
@@ -51,9 +60,8 @@ class Game extends Component {
   }
 
   onFieldClick(x, y) {
-    if (!this.state.levelGenerated) {
+    if (!this.props.levelGenerated) {
       this.generate(x, y);
-      this.setState({ levelGenerated: true });
     } else {
       const fields = this.props.fields;
       const field = fields[x][y];
@@ -69,8 +77,10 @@ class Game extends Component {
       console.log(nextFields);
 
       if (nextFields.length === 0 && this.props.fieldsLeftToClick > 1) {
-        console.log('Failed');
-        this.props.levelFailed();
+        Swal('Oops!', 'You lose!', 'warning').then(() => {
+          this.props.levelFailed();
+          this.props.history.push('/');
+        });
       }
 
       for (let i = 0; i < nextFields.length; i++) {
@@ -205,10 +215,12 @@ class Game extends Component {
 
 function mapStateToProps(state) {
   return {
+    levelGenerated: state.game.levelGenerated,
     lives: state.game.lives,
     level: state.game.level,
     fieldsLeftToClick: state.game.fieldsLeftToClick,
-    fields: state.game.fields
+    fields: state.game.fields,
+    lastLevel: state.game.lastLevel
   };
 }
 

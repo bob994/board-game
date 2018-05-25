@@ -18,7 +18,10 @@ class Field extends Component {
     return (
       <div
         className={className}
-        onClick={() => this.props.onFieldClick(this.props.x, this.props.y)}
+        onClick={() => {
+          if (this.props.next || className === 'field')
+            this.props.onFieldClick(this.props.x, this.props.y);
+        }}
       />
     );
   }

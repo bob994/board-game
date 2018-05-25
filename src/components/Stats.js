@@ -11,11 +11,11 @@ class Stats extends Component {
   }
 
   componentDidMount() {
-    setInterval(this.tick, 1000);
+    // setInterval(this.tick, 1000);
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer);
+    // clearInterval(this.timer);
   }
 
   tick() {
