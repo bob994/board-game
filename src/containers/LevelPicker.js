@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { playLevel } from '../actions';
+import { playLevel, selectPlayer, createPlayer } from '../actions';
+
+import Swal from 'sweetalert2';
 
 class LevelPicker extends Component {
   constructor(props) {
@@ -12,10 +14,11 @@ class LevelPicker extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.playLevel = this.playLevel.bind(this);
+    this.choosePlayer = this.choosePlayer.bind(this);
   }
 
   playLevel() {
-    this.props.playLevel(this.state.selectedLevel);
+    this.props.playLevel(this.state.selectedLevel, this.state.user);
     this.props.history.push('/game');
   }
 
@@ -23,18 +26,70 @@ class LevelPicker extends Component {
     this.setState({ selectedLevel: parseInt(event.target.value) });
   }
 
+  choosePlayer(event) {
+    event.preventDefault();
+
+    Swal({
+      title: 'Choose player',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Let's play!",
+      html: `<select value="${
+        this.props.selectedPlayer
+      }" class="swal2-input swal2-select" id="users">${this.renderPlayerList()}</select>
+            </br>Or add new</br> 
+            <input class="swal2-input" id="newUser" />`,
+      focusConfirm: false,
+      preConfirm: () => {
+        const users = document.getElementById('users').options;
+        const newUser = document.getElementById('newUser').value;
+
+        if (newUser !== '') {
+          for (let i = 0; i < users.length; i++) {
+            if (users[i].text === newUser) return false;
+          }
+
+          this.props.createPlayer(newUser);
+          return newUser;
+        }
+
+        return document.getElementById('users').value;
+      }
+    }).then(username => this.props.selectPlayer(username.value));
+  }
+
+  renderPlayerList() {
+    const players = this.props.players;
+    let result = '';
+
+    Object.keys(players).map((key, index) => {
+      if (key === this.props.selectedPlayer)
+        result += `<option selected value=${key}>${key}</option>`;
+      else result += `<option value=${key}>${key}</option>`;
+    });
+
+    return result;
+  }
+
   render() {
     const levels = [];
-    for (let i = 0; i < this.props.lastLevel; i++) {
+    const lastLevel = this.props.stats.lastLevel;
+
+    for (let i = 1; i <= lastLevel + 1; i++) {
       levels.push(
-        <option key={i + 1} value={i + 1}>
-          {i + 1}
+        <option key={i} value={i}>
+          {i}
         </option>
       );
     }
 
     return (
       <div>
+        <div>
+          <a className="btn btn-link" href="#" onClick={this.choosePlayer}>
+            Choose player
+          </a>
+        </div>
         <h1 className="text-center">Nine9</h1>
         <div className="form-group">
           <label>Level</label>
@@ -55,9 +110,16 @@ class LevelPicker extends Component {
 }
 
 function mapStateToProps(state) {
+  const { players, selectedPlayer } = state.game;
   return {
-    lastLevel: state.game.lastLevel
+    players,
+    selectedPlayer,
+    stats: players[selectedPlayer]
   };
 }
 
-export default connect(mapStateToProps, { playLevel })(LevelPicker);
+export default connect(mapStateToProps, {
+  playLevel,
+  selectPlayer,
+  createPlayer
+})(LevelPicker);

@@ -1,62 +1,108 @@
 import {
-  GENERATE_LEVEL,
   PLAY_TURN,
   LEVEL_COMPLETED,
   LEVEL_FAILED,
-  PLAY_LEVEL
+  PLAY_LEVEL,
+  CREATE_PLAYER,
+  SELECT_PLAYER
 } from '../actions';
 import { initializeArray } from '../helpers';
+import { WSAETIMEDOUT } from 'constants';
 
 const initState = {
-  levelGenerated: false,
-  lives: 1,
-  lastLevel: 1,
-  level: 1,
-  fieldsLeftToClick: 1,
-  fields: initializeArray()
+  selectedPlayer: 'Guest',
+  players: {
+    Guest: {
+      lives: 1,
+      lastLevel: 0,
+      level: 1,
+      fieldsLeftToClick: 1
+    }
+  }
 };
 
 export default function(state = initState, action) {
+  const selected = state.selectedPlayer;
+
   switch (action.type) {
-    case GENERATE_LEVEL:
-      return {
-        ...state,
-        levelGenerated: true,
-        fieldsLeftToClick: state.level,
-        fields: action.payload
-      };
     case PLAY_TURN:
       return {
         ...state,
-        fieldsLeftToClick: --state.fieldsLeftToClick,
-        fields: action.payload
+        players: {
+          ...state.players,
+          [selected]: {
+            ...state.players[selected],
+            fieldsLeftToClick: --state.players[selected].fieldsLeftToClick
+          }
+        }
       };
     case LEVEL_COMPLETED:
       return {
-        lives: ++state.lives,
-        lastLevel:
-          state.lastLevel > state.level ? state.lastLevel : state.level,
-        level: ++state.level,
-        levelGenerated: false,
-        fieldsLeftToClick: state.level + 1,
-        fields: initializeArray()
+        ...state,
+        players: {
+          ...state.players,
+          [selected]: {
+            lives: ++state.players[selected].lives,
+            lastLevel:
+              state.players[selected].lastLevel > state.players[selected].level
+                ? state.players[selected].lastLevel
+                : state.players[selected].level,
+            level: ++state.players[selected].level,
+            fieldsLeftToClick: state.players[selected].level + 1
+          }
+        }
       };
     case LEVEL_FAILED:
       return {
         ...state,
-        lives: state.lives - state.fieldsLeftToClick,
-        lastLevel:
-          state.lives - state.fieldsLeftToClick > 0 ? state.lastLevel : 1,
-        fieldsLeftToClick: 1,
-        fields: initializeArray()
+        players: {
+          ...state.players,
+          [selected]: {
+            lives:
+              state.players[selected].lives -
+              state.players[selected].fieldsLeftToClick,
+            lastLevel:
+              state.players[selected].lives -
+                state.players[selected].fieldsLeftToClick >
+              0
+                ? state.players[selected].lastLevel
+                : 0,
+            fieldsLeftToClick: 1
+          }
+        }
       };
     case PLAY_LEVEL:
       return {
         ...state,
-        levelGenerated: false,
-        level: action.payload,
-        fieldsLeftToClick: action.payload + 1,
-        fields: initializeArray()
+        players: {
+          ...state.players,
+          [state.selectedPlayer]: {
+            ...state.players[state.selectedPlayer],
+            lives: state.players[state.selectedPlayer].lives,
+            levelGenerated: false,
+            level: action.payload,
+            fieldsLeftToClick: action.payload + 1
+          }
+        }
+      };
+    case SELECT_PLAYER:
+      return {
+        ...state,
+        selectedPlayer: action.payload
+      };
+    case CREATE_PLAYER:
+      return {
+        ...state,
+        selectedPlayer: action.payload,
+        players: {
+          ...state.players,
+          [action.payload]: {
+            lives: 1,
+            lastLevel: 0,
+            level: 1,
+            fieldsLeftToClick: 1
+          }
+        }
       };
     default:
       return state;

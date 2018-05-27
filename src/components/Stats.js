@@ -6,31 +6,15 @@ class Stats extends Component {
     this.state = {
       timer: 0
     };
-
-    this.tick = this.tick.bind(this);
-  }
-
-  componentDidMount() {
-    // setInterval(this.tick, 1000);
-  }
-
-  componentWillUnmount() {
-    // clearInterval(this.timer);
-  }
-
-  tick() {
-    this.setState({
-      timer: ++this.state.timer
-    });
   }
 
   render() {
-    const { fieldsLeftToClick, lives, level } = this.props;
+    const { fieldsLeftToClick, lives, level, timer } = this.props;
 
     return (
       <div className="stats">
         <div className="stat">
-          Timer: <b>{this.state.timer}</b>
+          Timer: <b>{timer}</b>
         </div>
         <div className="stat">
           Left to click: <b>{fieldsLeftToClick}</b>

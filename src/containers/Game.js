@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  generateLevel,
-  playTurn,
-  levelCompleted,
-  levelFailed
-} from '../actions';
-import { initializeArray } from '../helpers';
+import { playTurn, levelCompleted, levelFailed } from '../actions';
+import { initializeArray, findLevelFields, findNextFields } from '../helpers';
 import Swal from 'sweetalert2';
 
 import Board from '../components/Board';
@@ -16,33 +11,53 @@ class Game extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      fields: initializeArray(),
+      levelGenerated: false,
+      timer: 0
+    };
+
+    this.tick = this.tick.bind(this);
     this.onFieldClick = this.onFieldClick.bind(this);
   }
 
   componentDidUpdate() {
     if (this.props.fieldsLeftToClick == 0) {
+      clearInterval(this.timerInterval);
+
       Swal({
         title: 'Well done!',
-        text: `You finish level ${this.props.level}. Continue on next level?`,
+        text: `You finished level ${this.props.level}. Continue on next level?`,
         type: 'success',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
         showCancelButton: true,
         confirmButtonText: 'Yes, go on!',
         cancelButtonText: 'No, get me back on level picker.'
       }).then(result => {
         if (result.value) {
           this.props.levelCompleted();
+          this.setState({
+            fields: initializeArray(),
+            levelGenerated: false,
+            timer: 0
+          });
         } else {
+          this.props.levelCompleted();
           this.props.history.push('/');
         }
       });
     }
   }
 
-  generate(x, y) {
-    const fields = initializeArray();
-    fields[x][y].played = true;
-    fields[x][y].level = true;
-    console.log(this.rec(fields, fields[x][y], this.props.level));
+  componentWillUnmount() {
+    clearInterval(this.timerInterval);
+  }
+
+  generateLevel(fields, field) {
+    field.played = true;
+    field.level = true;
+    this.rec(fields, field, this.props.level);
 
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
@@ -50,51 +65,57 @@ class Game extends Component {
       }
     }
 
-    const nextFields = this.availableNextField(fields, x, y);
+    const nextFields = findNextFields(fields, field);
 
     for (let i = 0; i < nextFields.length; i++) {
       fields[nextFields[i].x][nextFields[i].y].next = true;
     }
 
-    this.props.generateLevel(fields);
+    this.setState({ levelGenerated: true });
+  }
+
+  playTurn(fields, field) {
+    field.played = true;
+
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        if (fields[i][j].next) fields[i][j].next = false;
+      }
+    }
+
+    const nextFields = findNextFields(fields, field);
+
+    if (nextFields.length === 0 && this.props.fieldsLeftToClick > 1) {
+      Swal('Oops!', 'You lose!', 'warning').then(() => {
+        this.props.levelFailed();
+        this.props.history.push('/');
+      });
+    }
+
+    for (let i = 0; i < nextFields.length; i++) {
+      fields[nextFields[i].x][nextFields[i].y].next = true;
+    }
   }
 
   onFieldClick(x, y) {
-    if (!this.props.levelGenerated) {
-      this.generate(x, y);
+    const fields = this.state.fields.map(row => Object.assign({}, row));
+    const field = fields[x][y];
+
+    if (!this.state.levelGenerated) {
+      this.generateLevel(fields, field);
+      this.timerInterval = setInterval(this.tick, 1000);
     } else {
-      const fields = this.props.fields;
-      const field = fields[x][y];
-      field.played = true;
-
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-          if (fields[i][j].next) fields[i][j].next = false;
-        }
-      }
-
-      const nextFields = this.availableNextField(fields, x, y);
-      console.log(nextFields);
-
-      if (nextFields.length === 0 && this.props.fieldsLeftToClick > 1) {
-        Swal('Oops!', 'You lose!', 'warning').then(() => {
-          this.props.levelFailed();
-          this.props.history.push('/');
-        });
-      }
-
-      for (let i = 0; i < nextFields.length; i++) {
-        fields[nextFields[i].x][nextFields[i].y].next = true;
-      }
-      this.props.playTurn(fields);
+      this.playTurn(fields, field);
     }
+
+    this.props.playTurn();
   }
 
   rec(fields, firstField, level) {
     if (level == 0) return [];
 
     const { x, y } = firstField;
-    let af = this.availableField(fields, x, y);
+    let af = findLevelFields(fields, fields[x][y]);
 
     let arr = [];
 
@@ -115,98 +136,21 @@ class Game extends Component {
     return arr;
   }
 
-  availableField(arr, x, y) {
-    let result = [];
-
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (x - 3 == i && y == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 3 == i && y == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (y - 3 == j && x == i && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (y + 3 == j && x == i && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (x - 2 == i && y - 2 == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (x - 2 == i && y + 2 == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 2 == i && y - 2 == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 2 == i && y + 2 == j && !arr[i][j].level) {
-          result.push(arr[i][j]);
-        }
-      }
-    }
-
-    return result;
-  }
-
-  availableNextField(arr, x, y) {
-    let result = [];
-
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (x - 3 == i && y == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 3 == i && y == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (y - 3 == j && x == i && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (y + 3 == j && x == i && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (x - 2 == i && y - 2 == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (x - 2 == i && y + 2 == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 2 == i && y - 2 == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-
-        if (x + 2 == i && y + 2 == j && arr[i][j].level && !arr[i][j].played) {
-          result.push(arr[i][j]);
-        }
-      }
-    }
-
-    return result;
+  tick() {
+    this.setState({
+      timer: ++this.state.timer
+    });
   }
 
   render() {
     return (
       <div className="game">
-        <Board fields={this.props.fields} onFieldClick={this.onFieldClick} />
+        <Board fields={this.state.fields} onFieldClick={this.onFieldClick} />
         <Stats
           lives={this.props.lives}
           level={this.props.level}
           fieldsLeftToClick={this.props.fieldsLeftToClick}
+          timer={this.state.timer}
         />
       </div>
     );
@@ -214,18 +158,16 @@ class Game extends Component {
 }
 
 function mapStateToProps(state) {
+  const { selectedPlayer, players } = state.game;
   return {
-    levelGenerated: state.game.levelGenerated,
-    lives: state.game.lives,
-    level: state.game.level,
-    fieldsLeftToClick: state.game.fieldsLeftToClick,
-    fields: state.game.fields,
-    lastLevel: state.game.lastLevel
+    lives: players[selectedPlayer].lives,
+    level: players[selectedPlayer].level,
+    fieldsLeftToClick: players[selectedPlayer].fieldsLeftToClick,
+    lastLevel: players[selectedPlayer].lastLevel
   };
 }
 
 export default connect(mapStateToProps, {
-  generateLevel,
   playTurn,
   levelCompleted,
   levelFailed

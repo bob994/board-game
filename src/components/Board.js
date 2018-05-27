@@ -3,16 +3,6 @@ import React, { Component } from 'react';
 import Field from './Field';
 
 class Board extends Component {
-  constructor(props) {
-    super(props);
-
-    this.onFieldClick = this.onFieldClick.bind(this);
-  }
-
-  onFieldClick(x, y) {
-    this.props.onFieldClick(x, y);
-  }
-
   renderFields() {
     const fieldsComponent = [];
     const fields = this.props.fields;
@@ -23,7 +13,7 @@ class Board extends Component {
           <Field
             key={i + '_' + j}
             {...fields[i][j]}
-            onFieldClick={this.onFieldClick}
+            onFieldClick={(x, y) => this.props.onFieldClick(x, y)}
           />
         );
       }
