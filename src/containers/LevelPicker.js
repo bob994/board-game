@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { playLevel, selectPlayer, createPlayer } from '../actions';
 
@@ -17,6 +18,10 @@ class LevelPicker extends Component {
     this.choosePlayer = this.choosePlayer.bind(this);
   }
 
+  componentDidMount() {
+    this.setState({ selectedLevel: this.props.stats.lastLevel + 1 });
+  }
+
   playLevel() {
     this.props.playLevel(this.state.selectedLevel, this.state.user);
     this.props.history.push('/game');
@@ -33,12 +38,14 @@ class LevelPicker extends Component {
       title: 'Choose player',
       allowOutsideClick: false,
       allowEscapeKey: false,
+      backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)',
       confirmButtonText: "Let's play!",
       html: `<select value="${
         this.props.selectedPlayer
       }" class="swal2-input swal2-select" id="users">${this.renderPlayerList()}</select>
             </br>Or add new</br> 
-            <input class="swal2-input" id="newUser" />`,
+            <input class="swal2-input" id="newUser" />
+            </br><p class="d-none text-danger sweet-alert">User with same name already exist.</p>`,
       focusConfirm: false,
       preConfirm: () => {
         const users = document.getElementById('users').options;
@@ -46,7 +53,12 @@ class LevelPicker extends Component {
 
         if (newUser !== '') {
           for (let i = 0; i < users.length; i++) {
-            if (users[i].text === newUser) return false;
+            if (users[i].text === newUser) {
+              document
+                .getElementsByClassName('sweet-alert')[0]
+                .classList.remove('d-none');
+              return false;
+            }
           }
 
           this.props.createPlayer(newUser);
@@ -59,7 +71,7 @@ class LevelPicker extends Component {
   }
 
   renderPlayerList() {
-    const players = this.props.players;
+    const { players } = this.props;
     let result = '';
 
     Object.keys(players).map((key, index) => {
@@ -73,7 +85,7 @@ class LevelPicker extends Component {
 
   render() {
     const levels = [];
-    const lastLevel = this.props.stats.lastLevel;
+    const { lastLevel } = this.props.stats;
 
     for (let i = 1; i <= lastLevel + 1; i++) {
       levels.push(
@@ -84,33 +96,50 @@ class LevelPicker extends Component {
     }
 
     return (
-      <div>
-        <div>
-          <a className="btn btn-link" href="#" onClick={this.choosePlayer}>
+      <div className="level-picker d-flex flex-column justify-content-center">
+        <div className="level-picker__header p-2 d-flex justify-content-between align-items-center">
+          <div className="">
+            <img className="heart" src="../../img/heart.svg" />
+            {this.props.stats.lives}
+          </div>
+          <a href="#" onClick={this.choosePlayer}>
             Choose player
           </a>
         </div>
-        <h1 className="text-center">Nine9</h1>
-        <div className="form-group">
-          <label>Level</label>
-          <select
-            className="form-control"
-            value={this.state.selectedLevel}
-            onChange={this.handleChange}
-          >
-            {levels}
-          </select>
-          <button className="btn btn-primary" onClick={this.playLevel}>
-            Play
-          </button>
+        <div className="align-self-center mt-3 mt-lg-5">
+          <img src="../../img/logo.png" />
+        </div>
+        <div className="row justify-content-center">
+          <h3 className="col-12 text-center mt-2 mt-lg-5 mb-4 mb-lg-5">
+            Welcome {this.props.selectedPlayer}! Choose level and start your
+            game!
+          </h3>
+          <div className="col-12 col-lg-4 input-group">
+            <select
+              className="form-control"
+              value={this.state.selectedLevel}
+              onChange={this.handleChange}
+            >
+              {levels}
+            </select>
+            <div className="input-group-append">
+              <button className="btn btn-custom" onClick={this.playLevel}>
+                Play
+              </button>
+            </div>
+          </div>
+          <Link className="col-12 text-center mt-2" to="/topscore">
+            Top Score
+          </Link>
         </div>
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { players, selectedPlayer } = state.game;
+function mapStateToProps({ game }) {
+  const { players, selectedPlayer } = game;
+
   return {
     players,
     selectedPlayer,

@@ -5,19 +5,20 @@ export const PLAY_LEVEL = 'play_level';
 export const SELECT_PLAYER = 'select_player';
 export const CREATE_PLAYER = 'create_player';
 
-export function playTurn(player) {
+export function playTurn() {
   return {
     type: PLAY_TURN
   };
 }
 
-export function levelCompleted(player) {
+export function levelCompleted(time) {
   return {
-    type: LEVEL_COMPLETED
+    type: LEVEL_COMPLETED,
+    payload: time
   };
 }
 
-export function levelFailed(player) {
+export function levelFailed() {
   return {
     type: LEVEL_FAILED
   };

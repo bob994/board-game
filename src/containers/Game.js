@@ -29,6 +29,7 @@ class Game extends Component {
         title: 'Well done!',
         text: `You finished level ${this.props.level}. Continue on next level?`,
         type: 'success',
+        backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)',
         allowOutsideClick: false,
         allowEscapeKey: false,
         showCancelButton: true,
@@ -36,14 +37,14 @@ class Game extends Component {
         cancelButtonText: 'No, get me back on level picker.'
       }).then(result => {
         if (result.value) {
-          this.props.levelCompleted();
+          this.props.levelCompleted(this.state.timer);
           this.setState({
             fields: initializeArray(),
             levelGenerated: false,
             timer: 0
           });
         } else {
-          this.props.levelCompleted();
+          this.props.levelCompleted(this.state.timer);
           this.props.history.push('/');
         }
       });
@@ -86,7 +87,12 @@ class Game extends Component {
     const nextFields = findNextFields(fields, field);
 
     if (nextFields.length === 0 && this.props.fieldsLeftToClick > 1) {
-      Swal('Oops!', 'You lose!', 'warning').then(() => {
+      Swal({
+        title: 'Oops!',
+        text: 'You lose!',
+        type: 'warning',
+        backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)'
+      }).then(() => {
         this.props.levelFailed();
         this.props.history.push('/');
       });

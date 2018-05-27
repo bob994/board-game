@@ -6,14 +6,14 @@
   margin: 0;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  background: rgb(34, 193, 195);
-  background: linear-gradient(
-    120deg,
-    rgba(34, 193, 195, 1) 0%,
-    rgba(253, 187, 45, 1) 100%
-  );
+  background: linear-gradient(0deg, #4b6cb7 0%, #182848 100%);
 }
 
 .game {
@@ -69,4 +69,56 @@ body {
   display: flex;
   justify-content: space-between;
   padding-top: 5px;
+}
+
+.level-picker h3 {
+  color: #fff;
+}
+
+.level-picker a {
+  color: #dda83c;
+}
+
+.level-picker__header {
+  color: #dda83c;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.heart {
+  height: 30px;
+  margin-right: 5px;
+  animation: heartbeat 1s infinite;
+}
+
+.btn-custom {
+  color: #fff;
+  background-color: #f6bb43;
+  border-color: #dda83c;
+}
+
+.btn-custom:hover,
+.btn-custom:focus {
+  background-color: #dda83c;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(0.75);
+  }
+  20% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.75);
+  }
+  60% {
+    transform: scale(1);
+  }
+  80% {
+    transform: scale(0.75);
+  }
+  100% {
+    transform: scale(0.75);
+  }
 }

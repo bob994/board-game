@@ -16,7 +16,8 @@ const initState = {
       lives: 1,
       lastLevel: 0,
       level: 1,
-      fieldsLeftToClick: 1
+      fieldsLeftToClick: 2,
+      topScore: []
     }
   }
 };
@@ -37,6 +38,17 @@ export default function(state = initState, action) {
         }
       };
     case LEVEL_COMPLETED:
+      if (
+        state.players[selected].topScore[state.players[selected].level - 1] ==
+        undefined
+      ) {
+        state.players[selected].topScore[
+          state.players[selected].level - 1
+        ] = [];
+      }
+      const arr =
+        state.players[selected].topScore[state.players[selected].level - 1];
+      arr.push(action.payload);
       return {
         ...state,
         players: {
@@ -48,7 +60,8 @@ export default function(state = initState, action) {
                 ? state.players[selected].lastLevel
                 : state.players[selected].level,
             level: ++state.players[selected].level,
-            fieldsLeftToClick: state.players[selected].level + 1
+            fieldsLeftToClick: state.players[selected].level + 1,
+            topScore: [...state.players[selected].topScore]
           }
         }
       };
@@ -60,14 +73,19 @@ export default function(state = initState, action) {
           [selected]: {
             lives:
               state.players[selected].lives -
-              state.players[selected].fieldsLeftToClick,
+                state.players[selected].fieldsLeftToClick >
+              0
+                ? state.players[selected].lives -
+                  state.players[selected].fieldsLeftToClick
+                : 1,
             lastLevel:
               state.players[selected].lives -
                 state.players[selected].fieldsLeftToClick >
               0
                 ? state.players[selected].lastLevel
                 : 0,
-            fieldsLeftToClick: 1
+            fieldsLeftToClick: 1,
+            topScore: state.players[selected].topScore
           }
         }
       };
@@ -100,7 +118,8 @@ export default function(state = initState, action) {
             lives: 1,
             lastLevel: 0,
             level: 1,
-            fieldsLeftToClick: 1
+            fieldsLeftToClick: 1,
+            topScore: []
           }
         }
       };
