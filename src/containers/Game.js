@@ -151,13 +151,13 @@ class Game extends Component {
   render() {
     return (
       <div className="game">
-        <Board fields={this.state.fields} onFieldClick={this.onFieldClick} />
         <Stats
           lives={this.props.lives}
           level={this.props.level}
           fieldsLeftToClick={this.props.fieldsLeftToClick}
           timer={this.state.timer}
         />
+        <Board fields={this.state.fields} onFieldClick={this.onFieldClick} />
       </div>
     );
   }

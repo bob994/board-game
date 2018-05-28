@@ -96,7 +96,7 @@ class LevelPicker extends Component {
     }
 
     return (
-      <div className="level-picker d-flex flex-column justify-content-center">
+      <div className="container level-picker d-flex flex-column justify-content-center">
         <div className="level-picker__header p-2 d-flex justify-content-between align-items-center">
           <div className="">
             <img className="heart" src="../../img/heart.svg" />

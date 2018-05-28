@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 
 class Stats extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      timer: 0
-    };
-  }
-
   render() {
     const { fieldsLeftToClick, lives, level, timer } = this.props;
 

@@ -1,5 +1,3 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -8,12 +6,10 @@
 
 html,
 body {
-  height: 100%;
 }
 
 body {
-  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  background: linear-gradient(0deg, #4b6cb7 0%, #182848 100%);
+  background-color: #2b3d65;
 }
 
 .game {
@@ -22,9 +18,16 @@ body {
   width: 100%;
   height: 100vh;
   width: 100vh;
-  padding: 50px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
+}
+
+@media (orientation: portrait) {
+  .game {
+    width: 100vw;
+    height: 100vw;
+  }
 }
 
 .board {
@@ -46,29 +49,38 @@ body {
 }
 
 .field.disabled {
-  background-color: #7f857e;
 }
 
 .field.played {
-  background-color: red;
+  background-color: #bd311a;
 }
 
 .field.level {
-  background-color: green;
+  background-color: #70812b;
 }
 
 .field.next {
-  background-color: greenyellow;
+  background-color: #e1f982;
 }
 
 .field:not(.disabled):not(.played):not(.level):hover {
-  background-color: #acf0f2;
+  background-color: #dda83c;
+  cursor: pointer;
 }
 
 .stats {
   display: flex;
   justify-content: space-between;
-  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.stat {
+  color: #b9cefd;
+  font-size: 18px;
+}
+
+.stat b {
+  color: #dda83c;
 }
 
 .level-picker h3 {
@@ -102,6 +114,10 @@ body {
   background-color: #dda83c;
 }
 
+.text-custom {
+  color: #dda83c;
+}
+
 @keyframes heartbeat {
   0% {
     transform: scale(0.75);
@@ -121,4 +137,22 @@ body {
   100% {
     transform: scale(0.75);
   }
+}
+
+.scoreTime {
+  cursor: pointer;
+}
+
+.scoreTimePlus,
+.scoreTimeMinus {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.scoreTimePlus {
+  color: green;
+}
+
+.scoreTimeMinus {
+  color: red;
 }
