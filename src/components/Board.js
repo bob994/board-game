@@ -4,12 +4,12 @@ import Field from './Field';
 
 class Board extends Component {
   renderFields() {
-    const fieldsComponent = [];
+    const fieldsComponents = [];
     const fields = this.props.fields;
 
     for (let i = 0; i < fields.length; i++) {
       for (let j = 0; j < 10; j++) {
-        fieldsComponent.push(
+        fieldsComponents.push(
           <Field
             key={i + '_' + j}
             {...fields[i][j]}
@@ -19,7 +19,7 @@ class Board extends Component {
       }
     }
 
-    return fieldsComponent;
+    return fieldsComponents;
   }
 
   render() {

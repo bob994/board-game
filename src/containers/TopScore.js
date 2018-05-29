@@ -11,7 +11,7 @@ class TopScore extends Component {
     let i = scores.length - 1;
 
     while (result.length < 10 && i >= 0) {
-      result.push(<TableRow key={i} level={i + 1} scores={scores[i]} />);
+      if (scores[i] !== null) result.push(<TableRow key={i} level={i + 1} scores={scores[i]} />);
       i--;
     }
 

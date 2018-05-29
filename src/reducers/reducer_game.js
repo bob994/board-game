@@ -6,16 +6,16 @@ import {
   CREATE_PLAYER,
   SELECT_PLAYER
 } from '../actions';
-import { initializeArray } from '../helpers';
-import { WSAETIMEDOUT } from 'constants';
+
+import config from '../config/config';
 
 const initState = {
   selectedPlayer: 'Guest',
   players: {
     Guest: {
       lives: 1,
-      lastLevel: 0,
-      level: 1,
+      lastLevel: config.StartingLevel - 1,
+      level: config.StartingLevel,
       fieldsLeftToClick: 2,
       topScore: []
     }
@@ -23,45 +23,37 @@ const initState = {
 };
 
 export default function(state = initState, action) {
-  const selected = state.selectedPlayer;
+  const { selectedPlayer, players } = state;
+  let { lives, fieldsLeftToClick, lastLevel, topScore, level } = players[selectedPlayer];
 
   switch (action.type) {
     case PLAY_TURN:
       return {
         ...state,
         players: {
-          ...state.players,
-          [selected]: {
-            ...state.players[selected],
-            fieldsLeftToClick: --state.players[selected].fieldsLeftToClick
+          ...players,
+          [selectedPlayer]: {
+            ...players[selectedPlayer],
+            fieldsLeftToClick: --players[selectedPlayer].fieldsLeftToClick
           }
         }
       };
     case LEVEL_COMPLETED:
-      if (
-        state.players[selected].topScore[state.players[selected].level - 1] ==
-        undefined
-      ) {
-        state.players[selected].topScore[
-          state.players[selected].level - 1
-        ] = [];
-      }
-      const arr =
-        state.players[selected].topScore[state.players[selected].level - 1];
+      if (topScore[level - 1] == undefined) topScore[level - 1] = [];
+
+      const arr = topScore[level - 1];
       arr.push(action.payload);
+
       return {
         ...state,
         players: {
-          ...state.players,
-          [selected]: {
-            lives: ++state.players[selected].lives,
-            lastLevel:
-              state.players[selected].lastLevel > state.players[selected].level
-                ? state.players[selected].lastLevel
-                : state.players[selected].level,
-            level: ++state.players[selected].level,
-            fieldsLeftToClick: state.players[selected].level + 1,
-            topScore: [...state.players[selected].topScore]
+          ...players,
+          [selectedPlayer]: {
+            lives: ++lives,
+            lastLevel: lastLevel > level ? lastLevel : level,
+            level: ++level,
+            fieldsLeftToClick: level + 1,
+            topScore: [...topScore]
           }
         }
       };
@@ -69,23 +61,13 @@ export default function(state = initState, action) {
       return {
         ...state,
         players: {
-          ...state.players,
-          [selected]: {
-            lives:
-              state.players[selected].lives -
-                state.players[selected].fieldsLeftToClick >
-              0
-                ? state.players[selected].lives -
-                  state.players[selected].fieldsLeftToClick
-                : 1,
-            lastLevel:
-              state.players[selected].lives -
-                state.players[selected].fieldsLeftToClick >
-              0
-                ? state.players[selected].lastLevel
-                : 0,
+          ...players,
+          [selectedPlayer]: {
+            lives: lives - fieldsLeftToClick > 0 ? lives - fieldsLeftToClick : 1,
+            lastLevel: lives - fieldsLeftToClick > 0 ? lastLevel : config.StartingLevel - 1,
             fieldsLeftToClick: 1,
-            topScore: state.players[selected].topScore
+            topScore: topScore,
+            level: config.StartingLevel
           }
         }
       };
@@ -93,10 +75,10 @@ export default function(state = initState, action) {
       return {
         ...state,
         players: {
-          ...state.players,
-          [state.selectedPlayer]: {
-            ...state.players[state.selectedPlayer],
-            lives: state.players[state.selectedPlayer].lives,
+          ...players,
+          [selectedPlayer]: {
+            ...players[selectedPlayer],
+            lives: players[selectedPlayer].lives,
             levelGenerated: false,
             level: action.payload,
             fieldsLeftToClick: action.payload + 1
@@ -113,11 +95,11 @@ export default function(state = initState, action) {
         ...state,
         selectedPlayer: action.payload,
         players: {
-          ...state.players,
+          ...players,
           [action.payload]: {
             lives: 1,
-            lastLevel: 0,
-            level: 1,
+            lastLevel: config.StartingLevel - 1,
+            level: config.StartingLevel,
             fieldsLeftToClick: 1,
             topScore: []
           }

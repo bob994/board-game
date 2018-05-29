@@ -1,26 +1,20 @@
 import React, { Component } from 'react';
 
 class Field extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      disabled: false
-    };
-  }
   render() {
+    const { disabled, played, next, level } = this.props;
     let className = 'field';
-    if (this.props.disabled) className += ' disabled';
-    else if (this.props.played) className += ' played';
-    else if (this.props.next) className += ' next';
-    else if (this.props.level) className += ' level';
+
+    if (disabled) className += ' disabled';
+    else if (played) className += ' played';
+    else if (next) className += ' next';
+    else if (level) className += ' level';
 
     return (
       <div
         className={className}
         onClick={() => {
-          if (this.props.next || className === 'field')
-            this.props.onFieldClick(this.props.x, this.props.y);
+          if (next || className === 'field') this.props.onFieldClick(this.props.x, this.props.y);
         }}
       />
     );

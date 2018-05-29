@@ -29,7 +29,6 @@ class Game extends Component {
         title: 'Well done!',
         text: `You finished level ${this.props.level}. Continue on next level?`,
         type: 'success',
-        backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)',
         allowOutsideClick: false,
         allowEscapeKey: false,
         showCancelButton: true,
@@ -90,8 +89,7 @@ class Game extends Component {
       Swal({
         title: 'Oops!',
         text: 'You lose!',
-        type: 'warning',
-        backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)'
+        type: 'warning'
       }).then(() => {
         this.props.levelFailed();
         this.props.history.push('/');

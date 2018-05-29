@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { playLevel, selectPlayer, createPlayer } from '../actions';
-
+import config from '../config/config';
 import Swal from 'sweetalert2';
 
 class LevelPicker extends Component {
@@ -38,7 +38,6 @@ class LevelPicker extends Component {
       title: 'Choose player',
       allowOutsideClick: false,
       allowEscapeKey: false,
-      backdrop: 'linear-gradient(0deg, #4b6cb7 0%, #182848 100%)',
       confirmButtonText: "Let's play!",
       html: `<select value="${
         this.props.selectedPlayer
@@ -54,20 +53,19 @@ class LevelPicker extends Component {
         if (newUser !== '') {
           for (let i = 0; i < users.length; i++) {
             if (users[i].text === newUser) {
-              document
-                .getElementsByClassName('sweet-alert')[0]
-                .classList.remove('d-none');
+              document.getElementsByClassName('sweet-alert')[0].classList.remove('d-none');
               return false;
             }
           }
 
           this.props.createPlayer(newUser);
-          return newUser;
+          return true;
         }
 
-        return document.getElementById('users').value;
+        this.props.selectPlayer(document.getElementById('users').value);
+        return true;
       }
-    }).then(username => this.props.selectPlayer(username.value));
+    });
   }
 
   renderPlayerList() {
@@ -88,11 +86,13 @@ class LevelPicker extends Component {
     const { lastLevel } = this.props.stats;
 
     for (let i = 1; i <= lastLevel + 1; i++) {
-      levels.push(
-        <option key={i} value={i}>
-          {i}
-        </option>
-      );
+      if (i >= config.StartingLevel) {
+        levels.push(
+          <option key={i} value={i}>
+            {i}
+          </option>
+        );
+      }
     }
 
     return (
@@ -111,8 +111,7 @@ class LevelPicker extends Component {
         </div>
         <div className="row justify-content-center">
           <h3 className="col-12 text-center mt-2 mt-lg-5 mb-4 mb-lg-5">
-            Welcome {this.props.selectedPlayer}! Choose level and start your
-            game!
+            Welcome {this.props.selectedPlayer}! Choose level and start your game!
           </h3>
           <div className="col-12 col-lg-4 input-group">
             <select
