@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { playTurn, levelCompleted, levelFailed } from '../actions';
-import { initializeArray, findLevelFields, findNextFields } from '../helpers';
+import {
+  initializeArray,
+  findNextFields,
+  generateLevel,
+  disableFields
+} from '../helpers/fields_helper';
 import Swal from 'sweetalert2';
 
 import Board from '../components/Board';
@@ -32,8 +37,8 @@ class Game extends Component {
         allowOutsideClick: false,
         allowEscapeKey: false,
         showCancelButton: true,
-        confirmButtonText: 'Yes, go on!',
-        cancelButtonText: 'No, get me back on level picker.'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
       }).then(result => {
         if (result.value) {
           this.props.levelCompleted(this.state.timer);
@@ -54,34 +59,14 @@ class Game extends Component {
     clearInterval(this.timerInterval);
   }
 
-  generateLevel(fields, field) {
-    field.played = true;
-    field.level = true;
-    this.rec(fields, field, this.props.level);
-
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (!fields[i][j].level) fields[i][j].disabled = true;
-      }
-    }
-
-    const nextFields = findNextFields(fields, field);
-
-    for (let i = 0; i < nextFields.length; i++) {
-      fields[nextFields[i].x][nextFields[i].y].next = true;
-    }
-
-    this.setState({ levelGenerated: true });
-  }
-
   playTurn(fields, field) {
     field.played = true;
 
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (fields[i][j].next) fields[i][j].next = false;
-      }
-    }
+    fields.forEach(row => {
+      row.forEach(cell => {
+        cell.next = false;
+      });
+    });
 
     const nextFields = findNextFields(fields, field);
 
@@ -95,49 +80,48 @@ class Game extends Component {
         this.props.history.push('/');
       });
     }
-
-    for (let i = 0; i < nextFields.length; i++) {
-      fields[nextFields[i].x][nextFields[i].y].next = true;
-    }
   }
 
   onFieldClick(x, y) {
-    const fields = this.state.fields.map(row => Object.assign({}, row));
+    // Create Deep Clone
+    const fields = this.state.fields.map(row => {
+      const newRow = row.map(field => {
+        return Object.assign({}, field);
+      });
+
+      return newRow;
+    });
+
     const field = fields[x][y];
 
     if (!this.state.levelGenerated) {
-      this.generateLevel(fields, field);
-      this.timerInterval = setInterval(this.tick, 1000);
+      field.played = true;
+      field.level = true;
+
+      const level = generateLevel(fields, field, this.props.level);
+
+      if (level.length === this.props.level) {
+        disableFields(fields);
+        findNextFields(fields, field);
+
+        this.setState({ levelGenerated: true, fields });
+        this.timerInterval = setInterval(this.tick, 1000);
+        this.props.playTurn();
+      } else {
+        field.played = false;
+        field.level = false;
+
+        Swal({
+          title: 'Hmmm!',
+          text: "Can't generate level starting on this field!",
+          type: 'warning'
+        });
+      }
     } else {
       this.playTurn(fields, field);
+      this.setState({ fields });
+      this.props.playTurn();
     }
-
-    this.props.playTurn();
-  }
-
-  rec(fields, firstField, level) {
-    if (level == 0) return [];
-
-    const { x, y } = firstField;
-    let af = findLevelFields(fields, fields[x][y]);
-
-    let arr = [];
-
-    do {
-      if (af.length === 0) {
-        firstField.level = false;
-        return [];
-      }
-      arr = [];
-      const r = af[Math.floor(Math.random() * af.length)];
-      af.splice(af.indexOf(r), 1);
-      r.level = true;
-      const next = this.rec(fields, r, level - 1);
-      // if (next.length == 0 && level > 1) r.active = false;
-      arr = [r, ...next];
-    } while (arr.length != level);
-
-    return arr;
   }
 
   tick() {

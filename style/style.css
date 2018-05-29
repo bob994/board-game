@@ -31,10 +31,6 @@ body {
   border-right: 1px solid #b6bfb5;
 }
 
-.field.played {
-  background-color: #bd311a;
-}
-
 .field.level {
   background-color: #70812b;
 }
@@ -43,8 +39,9 @@ body {
   background-color: #e1f982;
 }
 
-.field:not(.disabled):not(.played):not(.level):hover {
-  background-color: #dda83c;
+.field:not(.disabled):not(.played):not(.level):hover,
+.field.played {
+  background-color: #bd311a;
   cursor: pointer;
 }
 

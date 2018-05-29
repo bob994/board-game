@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { saveState, loadState } from './helpers';
+import { saveState, loadState } from './helpers/storage_helper';
 
 import reducers from './reducers';
 

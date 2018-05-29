@@ -24,7 +24,9 @@ const initState = {
 
 export default function(state = initState, action) {
   const { selectedPlayer, players } = state;
-  let { lives, fieldsLeftToClick, lastLevel, topScore, level } = players[selectedPlayer];
+  let { lives, fieldsLeftToClick, lastLevel, topScore, level } = players[
+    selectedPlayer
+  ];
 
   switch (action.type) {
     case PLAY_TURN:
@@ -63,8 +65,12 @@ export default function(state = initState, action) {
         players: {
           ...players,
           [selectedPlayer]: {
-            lives: lives - fieldsLeftToClick > 0 ? lives - fieldsLeftToClick : 1,
-            lastLevel: lives - fieldsLeftToClick > 0 ? lastLevel : config.StartingLevel - 1,
+            lives:
+              lives - fieldsLeftToClick > 0 ? lives - fieldsLeftToClick : 1,
+            lastLevel:
+              lives - fieldsLeftToClick > 0
+                ? lastLevel
+                : config.StartingLevel - 1,
             fieldsLeftToClick: 1,
             topScore: topScore,
             level: config.StartingLevel

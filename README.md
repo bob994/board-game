@@ -9,4 +9,6 @@ Board game - React Project
 > cd board-game
 > npm install
 > npm start
+> Open http://localhost:8080/ in browser
+> Enjoy!
 ```

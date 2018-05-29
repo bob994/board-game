@@ -11,7 +11,8 @@ class TopScore extends Component {
     let i = scores.length - 1;
 
     while (result.length < 10 && i >= 0) {
-      if (scores[i] !== null) result.push(<TableRow key={i} level={i + 1} scores={scores[i]} />);
+      if (scores[i] !== null)
+        result.push(<TableRow key={i} level={i + 1} scores={scores[i]} />);
       i--;
     }
 
@@ -20,16 +21,16 @@ class TopScore extends Component {
 
   render() {
     return (
-      <div className="container-fluid">
-        <div className="row mt-3">
+      <div className="container">
+        <div className="row mt-2 d-flex justify-content-between align-items-center">
           <h1 className="col-6 text-custom">Top Score</h1>
           <div className="col-6 text-right">
             <Link to="/" className="btn btn-custom">
-              Back to homepage
+              Back
             </Link>
           </div>
         </div>
-        <table className="table mt-4">
+        <table className="table mt-2">
           <thead>
             <tr className="table-light">
               <th>Level</th>
