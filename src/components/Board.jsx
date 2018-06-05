@@ -29,14 +29,14 @@ class Board extends Component {
 export default Board;
 
 Board.propTypes = {
-  fields: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.objectOf(
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.bool,
-    PropTypes.bool,
-    PropTypes.bool,
-    PropTypes.bool,
-  ))).isRequired,
+  fields: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+    disabled: PropTypes.bool,
+    level: PropTypes.bool,
+    played: PropTypes.bool,
+    nexy: PropTypes.bool,
+  }))).isRequired,
   onFieldClick: PropTypes.func.isRequired,
 };
 

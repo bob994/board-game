@@ -27,7 +27,7 @@ class TopScore extends Component {
         <div className="row mt-2 d-flex justify-content-between align-items-center">
           <h1 className="col-6 text-custom">Top Score</h1>
           <div className="col-6 text-right">
-            <Link href="/" to="/" className="btn btn-custom">
+            <Link href="/" to="/" className="btn btn-link">
               Back
             </Link>
           </div>

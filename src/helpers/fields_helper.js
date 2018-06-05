@@ -2,7 +2,7 @@ let broj = 0;
 
 const findAvailableFields = (fields, field) => {
   const { x, y } = field;
-  let result = [];
+  const result = [];
 
   if (x - 3 >= 0) result.push(fields[x - 3][y]);
   if (x + 3 <= 9) result.push(fields[x + 3][y]);
@@ -32,8 +32,10 @@ const findAvailableFields = (fields, field) => {
 
 export const findLevelFields = (fields, field) => {
   const availableFields = findAvailableFields(fields, field);
-  
-  if (availableFields.length === 0 || availableFields === null || availableFields === undefined) return [];
+
+  if (availableFields.length === 0
+    || availableFields === null
+    || availableFields === undefined) return [];
 
   const levelFields = availableFields.filter(filteredField => !filteredField.level
     && !filteredField.played);

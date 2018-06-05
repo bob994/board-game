@@ -8,14 +8,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' },
+      },
+      {
         test: /\.(js|jsx)$/,
         resolve: { extensions: ['.js', '.jsx'] },
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader'],
-      },
-      {
-        test: /\.worker\.js$/,
-        use: { loader: 'worker-loader' }
       },
     ],
   },

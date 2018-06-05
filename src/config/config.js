@@ -1,5 +1,5 @@
 const config = {
-  StartingLevel: 98,
+  StartingLevel: 1,
 };
 
 export default config;

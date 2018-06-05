@@ -154,21 +154,21 @@ export default connect(mapStateToProps, {
 })(LevelPicker);
 
 LevelPicker.propTypes = {
-  players: PropTypes.objectOf(PropTypes.objectOf(
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-  )).isRequired,
+  players: PropTypes.objectOf(PropTypes.shape({
+    lives: PropTypes.any,
+    lastLevel: PropTypes.any,
+    level: PropTypes.any,
+    fieldToClick: PropTypes.any,
+    topScore: PropTypes.array,
+  })).isRequired,
   selectedPlayer: PropTypes.string.isRequired,
-  stats: PropTypes.objectOf(
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-    PropTypes.any,
-  ).isRequired,
+  stats: PropTypes.shape({
+    lives: PropTypes.any,
+    lastLevel: PropTypes.any,
+    level: PropTypes.any,
+    fieldToClick: PropTypes.any,
+    topScore: PropTypes.array,
+  }).isRequired,
   playLevel: PropTypes.func.isRequired,
   selectPlayer: PropTypes.func.isRequired,
   createPlayer: PropTypes.func.isRequired,

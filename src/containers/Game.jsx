@@ -6,10 +6,10 @@ import { playTurn, levelCompleted, levelFailed } from '../actions';
 import {
   initializeArray,
   findNextFields,
-  generateLevel,
+  // generateLevel,
   disableFields,
 } from '../helpers/fields_helper';
-import Worker from '../workers/generate.worker'
+import Worker from '../workers/generate.worker';
 
 import Board from '../components/Board';
 import Stats from '../components/Stats';
@@ -61,26 +61,6 @@ class Game extends Component {
     clearInterval(this.timerInterval);
   }
 
-  handleWorker(fields, field, level) {
-    if (level.length === this.props.level) {
-      disableFields(fields);
-      findNextFields(fields, field);
-
-      this.setState({ levelGenerated: true, fields });
-      this.timerInterval = setInterval(this.tick, 1000);
-      this.props.playTurn();
-    } else {
-      field.played = false;
-      field.level = false;
-
-      Swal({
-        title: 'Hmmm!',
-        text: "Can't generate level starting on this field!",
-        type: 'warning',
-      });
-    }
-  }
-
   onFieldClick(x, y) {
     // Create Deep Clone
     const fields = this.state.fields.map((row) => {
@@ -96,13 +76,47 @@ class Game extends Component {
       field.level = true;
 
       const worker = new Worker();
-      worker.postMessage({ fields, field, level: this.props.level })
+      worker.postMessage({ fields, field, level: this.props.level });
       // const level = generateLevel(fields, field, this.props.level);
-      worker.onmessage = (event) => { this.handleWorker(event.data.fields, field, event.data.level)}
+      worker.onmessage = (event) => {
+        this.handleWorker(event.data.fields, field, event.data.level);
+      };
+
+      Swal({
+        title: 'Level generating',
+        text: 'Please wait',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+      });
     } else {
       this.playTurn(fields, field);
       this.setState({ fields });
       this.props.playTurn();
+    }
+  }
+
+  handleWorker(fields, field, level) {
+    Swal.close();
+
+    if (level.length === this.props.level) {
+      disableFields(fields);
+      findNextFields(fields, field);
+
+      this.setState({ levelGenerated: true, fields });
+      this.timerInterval = setInterval(this.tick, 1000);
+      this.props.playTurn();
+    } else {
+      const currentField = field;
+      currentField.played = false;
+      currentField.level = false;
+
+      Swal({
+        title: 'Hmmm!',
+        text: "Can't generate level starting on this field!",
+        type: 'warning',
+      });
     }
   }
 
