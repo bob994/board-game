@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class TableRow extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      opened: false
+      opened: false,
     };
 
     this.handleOnClick = this.handleOnClick.bind(this);
@@ -20,34 +21,45 @@ class TableRow extends Component {
     const otherScores = sortedScores.map((score, i) => {
       if (i > 0) {
         return (
-          <div key={i}>
+          <div key={`${score}_${score}`}>
             {score} seconds
             <br />
           </div>
         );
       }
+      return null;
     });
+
+    let thing;
+
+    if (otherScores.length > 1 && this.state.opened) {
+      thing = <span className="scoreTimeMinus">&#x2212;</span>;
+    } else if (otherScores.length > 1 && !this.state.opened) {
+      thing = <span className="scoreTimePlus">&#43;</span>;
+    }
 
     return (
       <tr className="table-light">
         <td>Level {this.props.level}</td>
-        <td className="text-center scoreTime" onClick={this.handleOnClick}>
+        <td
+          className="text-center scoreTime"
+          onClick={this.handleOnClick}
+          onKeyPress={this.handleOnClick}
+          role="presentation"
+        >
           {Math.max(...this.props.scores)} seconds{' '}
-          {otherScores.length > 1 ? (
-            this.state.opened ? (
-              <span className="scoreTimeMinus">&#x2212;</span>
-            ) : (
-              <span className="scoreTimePlus">&#43;</span>
-            )
-          ) : (
-            ''
-          )}
+          {thing}
           {this.state.opened ? otherScores : ''}
         </td>
         <td className="text-right">{this.props.scores.length}</td>
-      </tr>
+      </tr >
     );
   }
 }
 
 export default TableRow;
+
+TableRow.propTypes = {
+  scores: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  level: PropTypes.number.isRequired,
+};

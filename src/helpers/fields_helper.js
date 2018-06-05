@@ -1,19 +1,48 @@
+const findAvailableFields = (fields, field) => {
+  const { x, y } = field;
+  let result = [];
+
+  fields.forEach((row) => {
+    const af = row.filter(filteredField =>
+      (filteredField.x === x - 3 && filteredField.y === y) ||
+      (filteredField.x === x + 3 && filteredField.y === y) ||
+      (filteredField.x === x && filteredField.y === y - 3) ||
+      (filteredField.x === x && filteredField.y === y + 3) ||
+      (filteredField.x === x - 2 && filteredField.y === y - 2) ||
+      (filteredField.x === x - 2 && filteredField.y === y + 2) ||
+      (filteredField.x === x + 2 && filteredField.y === y - 2) ||
+      (filteredField.x === x + 2 && filteredField.y === y + 2));
+
+    result = [...result, ...af];
+  });
+
+  return result;
+};
+
+const findLevelFields = (fields, field) => {
+  const availableFields = findAvailableFields(fields, field);
+  const levelFields = availableFields.filter(filteredField => !filteredField.level
+    && !filteredField.played);
+
+  return levelFields;
+};
+
 export const initializeArray = () => {
   const fields = [];
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i += 1) {
     fields.push([]);
   }
 
   fields.forEach((row, i) => {
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < 10; j += 1) {
       row.push({
         x: i,
         y: j,
         disabled: false,
         level: false,
         played: false,
-        next: false
+        next: false,
       });
     }
   });
@@ -22,13 +51,14 @@ export const initializeArray = () => {
 };
 
 export const generateLevel = (fields, field, count) => {
+  const currentField = field;
   const { x, y } = field;
   const availableFields = findLevelFields(fields, fields[x][y]);
   let result = [];
 
   while (result.length !== count) {
     if (availableFields.length === 0) {
-      field.level = false;
+      currentField.level = false;
       return [];
     }
 
@@ -47,53 +77,22 @@ export const generateLevel = (fields, field, count) => {
 
 export const findNextFields = (fields, field) => {
   const availableFields = findAvailableFields(fields, field);
-  const nextFields = availableFields.filter(
-    field => field.level && !field.played
-  );
+  const nextFields = availableFields.filter(filteredField => filteredField.level
+    && !filteredField.played);
 
-  nextFields.forEach(field => {
-    field.next = true;
+  nextFields.forEach((nextField) => {
+    const next = nextField;
+    next.next = true;
   });
 
   return nextFields;
 };
 
-const findLevelFields = (fields, field) => {
-  const availableFields = findAvailableFields(fields, field);
-  const levelFields = availableFields.filter(
-    field => !field.level && !field.played
-  );
-
-  return levelFields;
-};
-
-const findAvailableFields = (fields, field) => {
-  const { x, y } = field;
-  let result = [];
-
-  fields.forEach(row => {
-    const af = row.filter(
-      field =>
-        (field.x == x - 3 && field.y == y) ||
-        (field.x == x + 3 && field.y == y) ||
-        (field.x == x && field.y == y - 3) ||
-        (field.x == x && field.y == y + 3) ||
-        (field.x == x - 2 && field.y == y - 2) ||
-        (field.x == x - 2 && field.y == y + 2) ||
-        (field.x == x + 2 && field.y == y - 2) ||
-        (field.x == x + 2 && field.y == y + 2)
-    );
-
-    result = [...result, ...af];
-  });
-
-  return result;
-};
-
-export const disableFields = fields => {
-  fields.forEach(row => {
-    row.forEach(cell => {
-      if (!cell.level) cell.disabled = true;
+export const disableFields = (fields) => {
+  fields.forEach((row) => {
+    row.forEach((cell) => {
+      const currentCell = cell;
+      if (!currentCell.level) currentCell.disabled = true;
     });
   });
 };

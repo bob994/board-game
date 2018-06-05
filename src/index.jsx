@@ -31,5 +31,5 @@ ReactDOM.render(
       </div>
     </BrowserRouter>
   </Provider>,
-  document.querySelector('.app')
+  document.querySelector('.app'),
 );

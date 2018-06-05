@@ -4,7 +4,7 @@ import {
   LEVEL_FAILED,
   PLAY_LEVEL,
   CREATE_PLAYER,
-  SELECT_PLAYER
+  SELECT_PLAYER,
 } from '../actions';
 
 import config from '../config/config';
@@ -17,14 +17,17 @@ const initState = {
       lastLevel: config.StartingLevel - 1,
       level: config.StartingLevel,
       fieldsLeftToClick: 2,
-      topScore: []
-    }
-  }
+      topScore: [],
+    },
+  },
 };
 
-export default function(state = initState, action) {
+export default function (state = initState, action) {
   const { selectedPlayer, players } = state;
-  let { lives, fieldsLeftToClick, lastLevel, topScore, level } = players[
+  const { fieldsLeftToClick, lastLevel, topScore } = players[selectedPlayer];
+  const {
+    lives, level,
+  } = players[
     selectedPlayer
   ];
 
@@ -36,12 +39,12 @@ export default function(state = initState, action) {
           ...players,
           [selectedPlayer]: {
             ...players[selectedPlayer],
-            fieldsLeftToClick: --players[selectedPlayer].fieldsLeftToClick
-          }
-        }
+            fieldsLeftToClick: players[selectedPlayer].fieldsLeftToClick - 1,
+          },
+        },
       };
-    case LEVEL_COMPLETED:
-      if (topScore[level - 1] == undefined) topScore[level - 1] = [];
+    case LEVEL_COMPLETED: {
+      if (topScore[level - 1] === undefined) topScore[level - 1] = [];
 
       const arr = topScore[level - 1];
       arr.push(action.payload);
@@ -51,14 +54,15 @@ export default function(state = initState, action) {
         players: {
           ...players,
           [selectedPlayer]: {
-            lives: ++lives,
+            lives: lives + 1,
             lastLevel: lastLevel > level ? lastLevel : level,
-            level: ++level,
-            fieldsLeftToClick: level + 1,
-            topScore: [...topScore]
-          }
-        }
+            level: level + 1,
+            fieldsLeftToClick: level + 2,
+            topScore: [...topScore],
+          },
+        },
       };
+    }
     case LEVEL_FAILED:
       return {
         ...state,
@@ -72,10 +76,10 @@ export default function(state = initState, action) {
                 ? lastLevel
                 : config.StartingLevel - 1,
             fieldsLeftToClick: 1,
-            topScore: topScore,
-            level: config.StartingLevel
-          }
-        }
+            topScore,
+            level: config.StartingLevel,
+          },
+        },
       };
     case PLAY_LEVEL:
       return {
@@ -87,14 +91,14 @@ export default function(state = initState, action) {
             lives: players[selectedPlayer].lives,
             levelGenerated: false,
             level: action.payload,
-            fieldsLeftToClick: action.payload + 1
-          }
-        }
+            fieldsLeftToClick: action.payload + 1,
+          },
+        },
       };
     case SELECT_PLAYER:
       return {
         ...state,
-        selectedPlayer: action.payload
+        selectedPlayer: action.payload,
       };
     case CREATE_PLAYER:
       return {
@@ -107,9 +111,9 @@ export default function(state = initState, action) {
             lastLevel: config.StartingLevel - 1,
             level: config.StartingLevel,
             fieldsLeftToClick: 1,
-            topScore: []
-          }
-        }
+            topScore: [],
+          },
+        },
       };
     default:
       return state;

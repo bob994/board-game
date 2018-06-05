@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 import { playLevel, selectPlayer, createPlayer } from '../actions';
 import config from '../config/config';
-import Swal from 'sweetalert2';
 
 class LevelPicker extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedLevel: 1
+      selectedLevel: 1,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -19,6 +20,10 @@ class LevelPicker extends Component {
   }
 
   componentDidMount() {
+    this.onMount();
+  }
+
+  onMount() {
     this.setState({ selectedLevel: this.props.stats.lastLevel + 1 });
   }
 
@@ -28,7 +33,7 @@ class LevelPicker extends Component {
   }
 
   handleChange(event) {
-    this.setState({ selectedLevel: parseInt(event.target.value) });
+    this.setState({ selectedLevel: parseInt(event.target.value, 10) });
   }
 
   choosePlayer(event) {
@@ -51,7 +56,7 @@ class LevelPicker extends Component {
         const newUser = document.getElementById('newUser').value;
 
         if (newUser !== '') {
-          for (let i = 0; i < users.length; i++) {
+          for (let i = 0; i < users.length; i += 1) {
             if (users[i].text === newUser) {
               document.getElementsByClassName('sweet-alert')[0].classList.remove('d-none');
               return false;
@@ -64,7 +69,7 @@ class LevelPicker extends Component {
 
         this.props.selectPlayer(document.getElementById('users').value);
         return true;
-      }
+      },
     });
   }
 
@@ -72,10 +77,10 @@ class LevelPicker extends Component {
     const { players } = this.props;
     let result = '';
 
-    Object.keys(players).map((key, index) => {
-      if (key === this.props.selectedPlayer)
+    Object.keys(players).forEach((key) => {
+      if (key === this.props.selectedPlayer) {
         result += `<option selected value=${key}>${key}</option>`;
-      else result += `<option value=${key}>${key}</option>`;
+      } else result += `<option value=${key}>${key}</option>`;
     });
 
     return result;
@@ -85,13 +90,9 @@ class LevelPicker extends Component {
     const levels = [];
     const { lastLevel } = this.props.stats;
 
-    for (let i = 1; i <= lastLevel + 1; i++) {
+    for (let i = 1; i <= lastLevel + 1; i += 1) {
       if (i >= config.StartingLevel) {
-        levels.push(
-          <option key={i} value={i}>
-            {i}
-          </option>
-        );
+        levels.push(<option key={i} value={i}>{i}</option>);
       }
     }
 
@@ -99,15 +100,15 @@ class LevelPicker extends Component {
       <div className="container level-picker d-flex flex-column justify-content-center">
         <div className="level-picker__header p-2 d-flex justify-content-between align-items-center">
           <div className="">
-            <img className="heart" src="../../img/heart.svg" />
+            <img className="heart" src="../../img/heart.svg" alt="Lives" />
             {this.props.stats.lives}
           </div>
-          <a href="#" onClick={this.choosePlayer}>
+          <button onClick={this.choosePlayer} className="btn btn-link">
             Choose player
-          </a>
+          </button>
         </div>
         <div className="align-self-center mt-3 mt-lg-5">
-          <img src="../../img/logo.png" />
+          <img src="../../img/logo.png" alt="Logo" />
         </div>
         <div className="row justify-content-center">
           <h3 className="col-12 text-center mt-2 mt-lg-5 mb-4 mb-lg-5">
@@ -127,7 +128,7 @@ class LevelPicker extends Component {
               </button>
             </div>
           </div>
-          <Link className="col-12 text-center mt-2" to="/topscore">
+          <Link className="col-12 text-center mt-2" href="/topscore" to="/topscore">
             Top Score
           </Link>
         </div>
@@ -142,12 +143,34 @@ function mapStateToProps({ game }) {
   return {
     players,
     selectedPlayer,
-    stats: players[selectedPlayer]
+    stats: players[selectedPlayer],
   };
 }
 
 export default connect(mapStateToProps, {
   playLevel,
   selectPlayer,
-  createPlayer
+  createPlayer,
 })(LevelPicker);
+
+LevelPicker.propTypes = {
+  players: PropTypes.objectOf(PropTypes.objectOf(
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+  )).isRequired,
+  selectedPlayer: PropTypes.string.isRequired,
+  stats: PropTypes.objectOf(
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+    PropTypes.any,
+  ).isRequired,
+  playLevel: PropTypes.func.isRequired,
+  selectPlayer: PropTypes.func.isRequired,
+  createPlayer: PropTypes.func.isRequired,
+  history: PropTypes.any.isRequired,
+};

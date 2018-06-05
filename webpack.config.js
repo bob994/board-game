@@ -1,23 +1,22 @@
 module.exports = {
-  entry: ['./src/index.js'],
+  entry: ['./src/index.jsx'],
   output: {
     path: __dirname,
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
+        resolve: { extensions: ['.js', '.jsx'] },
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
-      }
-    ]
+        use: ['babel-loader', 'eslint-loader'],
+      },
+    ],
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
   },
-  mode: 'development'
+  mode: 'development',
 };

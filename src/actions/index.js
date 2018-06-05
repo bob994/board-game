@@ -7,40 +7,40 @@ export const CREATE_PLAYER = 'create_player';
 
 export function playTurn() {
   return {
-    type: PLAY_TURN
+    type: PLAY_TURN,
   };
 }
 
 export function levelCompleted(time) {
   return {
     type: LEVEL_COMPLETED,
-    payload: time
+    payload: time,
   };
 }
 
 export function levelFailed() {
   return {
-    type: LEVEL_FAILED
+    type: LEVEL_FAILED,
   };
 }
 
 export function playLevel(level) {
   return {
     type: PLAY_LEVEL,
-    payload: level
+    payload: level,
   };
 }
 
 export function selectPlayer(player) {
   return {
     type: SELECT_PLAYER,
-    payload: player
+    payload: player,
   };
 }
 
 export function createPlayer(player) {
   return {
     type: CREATE_PLAYER,
-    payload: player
+    payload: player,
   };
 }

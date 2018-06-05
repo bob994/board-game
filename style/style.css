@@ -64,8 +64,15 @@ body {
   color: #fff;
 }
 
-.level-picker a {
+.level-picker a, .btn-link {
   color: #dda83c;
+}
+
+.btn-link:hover {
+  color: #fff;
+  background-color: #f6bb43;
+  border-color: #dda83c;
+  text-decoration: none;
 }
 
 .level-picker__header {

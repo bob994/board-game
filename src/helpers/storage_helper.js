@@ -2,7 +2,9 @@ export function saveState(state) {
   try {
     const stringifyState = JSON.stringify(state);
     localStorage.setItem('state', stringifyState);
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export function loadState() {
