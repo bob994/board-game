@@ -3,14 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
 import { playTurn, levelCompleted, levelFailed } from '../actions';
-import {
-  initializeArray,
-  findNextFields,
-  // generateLevel,
-  disableFields,
-} from '../helpers/fields_helper';
+import { initializeArray, findNextFields, disableFields } from '../helpers/fields_helper';
 import Worker from '../workers/generate.worker';
-
 import Board from '../components/Board';
 import Stats from '../components/Stats';
 
@@ -63,12 +57,7 @@ class Game extends Component {
 
   onFieldClick(x, y) {
     // Create Deep Clone
-    const fields = this.state.fields.map((row) => {
-      const newRow = row.map(field => Object.assign({}, field));
-
-      return newRow;
-    });
-
+    const fields = this.state.fields.map(row => row.map(field => Object.assign({}, field)));
     const field = fields[x][y];
 
     if (!this.state.levelGenerated) {
@@ -77,9 +66,8 @@ class Game extends Component {
 
       const worker = new Worker();
       worker.postMessage({ fields, field, level: this.props.level });
-      // const level = generateLevel(fields, field, this.props.level);
       worker.onmessage = (event) => {
-        this.handleWorker(event.data.fields, field, event.data.level);
+        this.handleWorker(event.data.fields, field);
       };
 
       Swal({
@@ -97,27 +85,15 @@ class Game extends Component {
     }
   }
 
-  handleWorker(fields, field, level) {
+  handleWorker(fields, field) {
     Swal.close();
 
-    if (level.length === this.props.level) {
-      disableFields(fields);
-      findNextFields(fields, field);
+    disableFields(fields);
+    findNextFields(fields, field);
 
-      this.setState({ levelGenerated: true, fields });
-      this.timerInterval = setInterval(this.tick, 1000);
-      this.props.playTurn();
-    } else {
-      const currentField = field;
-      currentField.played = false;
-      currentField.level = false;
-
-      Swal({
-        title: 'Hmmm!',
-        text: "Can't generate level starting on this field!",
-        type: 'warning',
-      });
-    }
+    this.setState({ levelGenerated: true, fields });
+    this.timerInterval = setInterval(this.tick, 1000);
+    this.props.playTurn();
   }
 
   playTurn(fields, field) {
