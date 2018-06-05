@@ -30,8 +30,8 @@ export default Board;
 
 Board.propTypes = {
   fields: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.objectOf(
-    PropTypes.number,
-    PropTypes.number,
+    PropTypes.any,
+    PropTypes.any,
     PropTypes.bool,
     PropTypes.bool,
     PropTypes.bool,

@@ -9,6 +9,7 @@ import {
   generateLevel,
   disableFields,
 } from '../helpers/fields_helper';
+import Worker from '../workers/generate.worker'
 
 import Board from '../components/Board';
 import Stats from '../components/Stats';
@@ -60,6 +61,26 @@ class Game extends Component {
     clearInterval(this.timerInterval);
   }
 
+  handleWorker(fields, field, level) {
+    if (level.length === this.props.level) {
+      disableFields(fields);
+      findNextFields(fields, field);
+
+      this.setState({ levelGenerated: true, fields });
+      this.timerInterval = setInterval(this.tick, 1000);
+      this.props.playTurn();
+    } else {
+      field.played = false;
+      field.level = false;
+
+      Swal({
+        title: 'Hmmm!',
+        text: "Can't generate level starting on this field!",
+        type: 'warning',
+      });
+    }
+  }
+
   onFieldClick(x, y) {
     // Create Deep Clone
     const fields = this.state.fields.map((row) => {
@@ -74,25 +95,10 @@ class Game extends Component {
       field.played = true;
       field.level = true;
 
-      const level = generateLevel(fields, field, this.props.level);
-
-      if (level.length === this.props.level) {
-        disableFields(fields);
-        findNextFields(fields, field);
-
-        this.setState({ levelGenerated: true, fields });
-        this.timerInterval = setInterval(this.tick, 1000);
-        this.props.playTurn();
-      } else {
-        field.played = false;
-        field.level = false;
-
-        Swal({
-          title: 'Hmmm!',
-          text: "Can't generate level starting on this field!",
-          type: 'warning',
-        });
-      }
+      const worker = new Worker();
+      worker.postMessage({ fields, field, level: this.props.level })
+      // const level = generateLevel(fields, field, this.props.level);
+      worker.onmessage = (event) => { this.handleWorker(event.data.fields, field, event.data.level)}
     } else {
       this.playTurn(fields, field);
       this.setState({ fields });
@@ -168,5 +174,5 @@ Game.propTypes = {
   playTurn: PropTypes.func.isRequired,
   levelCompleted: PropTypes.func.isRequired,
   levelFailed: PropTypes.func.isRequired,
-  history: PropTypes.any.isRequired,
+  history: PropTypes.objectOf(PropTypes.any).isRequired,
 };

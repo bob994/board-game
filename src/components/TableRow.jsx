@@ -60,6 +60,6 @@ class TableRow extends Component {
 export default TableRow;
 
 TableRow.propTypes = {
-  scores: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  scores: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)).isRequired,
   level: PropTypes.number.isRequired,
 };

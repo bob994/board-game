@@ -172,5 +172,5 @@ LevelPicker.propTypes = {
   playLevel: PropTypes.func.isRequired,
   selectPlayer: PropTypes.func.isRequired,
   createPlayer: PropTypes.func.isRequired,
-  history: PropTypes.any.isRequired,
+  history: PropTypes.objectOf(PropTypes.any).isRequired,
 };

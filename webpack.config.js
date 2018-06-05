@@ -13,6 +13,10 @@ module.exports = {
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader'],
       },
+      {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' }
+      },
     ],
   },
   devServer: {

@@ -1,26 +1,40 @@
+let broj = 0;
+
 const findAvailableFields = (fields, field) => {
   const { x, y } = field;
   let result = [];
 
-  fields.forEach((row) => {
-    const af = row.filter(filteredField =>
-      (filteredField.x === x - 3 && filteredField.y === y) ||
-      (filteredField.x === x + 3 && filteredField.y === y) ||
-      (filteredField.x === x && filteredField.y === y - 3) ||
-      (filteredField.x === x && filteredField.y === y + 3) ||
-      (filteredField.x === x - 2 && filteredField.y === y - 2) ||
-      (filteredField.x === x - 2 && filteredField.y === y + 2) ||
-      (filteredField.x === x + 2 && filteredField.y === y - 2) ||
-      (filteredField.x === x + 2 && filteredField.y === y + 2));
+  if (x - 3 >= 0) result.push(fields[x - 3][y]);
+  if (x + 3 <= 9) result.push(fields[x + 3][y]);
+  if (y - 3 >= 0) result.push(fields[x][y - 3]);
+  if (y + 3 <= 9) result.push(fields[x][y + 3]);
+  if (x - 2 >= 0 && y - 2 >= 0) result.push(fields[x - 2][y - 2]);
+  if (x - 2 >= 0 && y + 2 <= 9) result.push(fields[x - 2][y + 2]);
+  if (x + 2 <= 9 && y + 2 <= 9) result.push(fields[x + 2][y + 2]);
+  if (x + 2 <= 9 && y - 2 >= 0) result.push(fields[x + 2][y - 2]);
 
-    result = [...result, ...af];
-  });
+  // fields.forEach((row) => {
+  //   const af = row.filter(filteredField =>
+  //     (filteredField.x === x - 3 && filteredField.y === y) ||
+  //     (filteredField.x === x + 3 && filteredField.y === y) ||
+  //     (filteredField.x === x && filteredField.y === y - 3) ||
+  //     (filteredField.x === x && filteredField.y === y + 3) ||
+  //     (filteredField.x === x - 2 && filteredField.y === y - 2) ||
+  //     (filteredField.x === x - 2 && filteredField.y === y + 2) ||
+  //     (filteredField.x === x + 2 && filteredField.y === y - 2) ||
+  //     (filteredField.x === x + 2 && filteredField.y === y + 2));
+
+  //   result = [...result, ...af];
+  // });
 
   return result;
 };
 
-const findLevelFields = (fields, field) => {
+export const findLevelFields = (fields, field) => {
   const availableFields = findAvailableFields(fields, field);
+  
+  if (availableFields.length === 0 || availableFields === null || availableFields === undefined) return [];
+
   const levelFields = availableFields.filter(filteredField => !filteredField.level
     && !filteredField.played);
 
@@ -51,6 +65,7 @@ export const initializeArray = () => {
 };
 
 export const generateLevel = (fields, field, count) => {
+  console.log(broj += 1);
   const currentField = field;
   const { x, y } = field;
   const availableFields = findLevelFields(fields, fields[x][y]);
